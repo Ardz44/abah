@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Panel</title>
+  <!-- SWIPER -->
+  <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+</head>
+<body>
+
+
+  <!-- HEADER -->
+    <header class="header">
+    <div id="menu-btn" class="fas fa-bars"></div>
+    <a href="#" class="logo">
+  <img src="../image/Bah-Sipit.png" alt="Kopi BahSipit" style="height: 40px; vertical-align: middle;">
+</a>
+   <nav class="navbar">
+      <a href="admin.html">Dashboard</a>
+      <a href="pesanan.html">pesanan</a>
+      <a href="uploadproduk.html">produk</a>
+    </nav>
+    <div class="navbar-icons">
+      <span id="userWelcome"></span>
+      <i class="fas fa-user" onclick="toggleSidebar('profileSidebar')"></i>
+      <i class="fas fa-power-off" onclick="logout()"></i>
+    </div>
+</header>
+
+
+  <section class="book" style="position:relative;">
+    <h1 class="heading">admin <span>dashboard</span></h1>
+    <button class="btn logout" onclick="logout()" style="position:absolute; top:2rem; right:2rem;">Logout</button>
+
+
+
+    <!-- Statistik -->
+    <div class="card-box">
+      <h3>Statistik Pesanan</h3>
+      <canvas id="orderChart" height="150"></canvas>
+    </div>
+
+  </section>
+
+  <!-- SCRIPT -->
+  <script>
+    
+
+    document.addEventListener('DOMContentLoaded', function () {
+  // Semua script dimulai di sini
+
+  // Proteksi login (jika diperlukan lagi)
+  const user = localStorage.getItem('activeUser');
+  const role = localStorage.getItem('activeRole');
+  if (!user || role !== 'admin') {
+    alert("Akses hanya untuk admin!");
+    window.location.href = '../project/login.html';
+  }
+
+  // Logout button
+  document.querySelector(".logout").onclick = function () {
+    localStorage.removeItem('activeUser');
+    localStorage.removeItem('activeRole');
+    window.location.href = 'login.html';
+  };
+
+  // Form filter onsubmit
+  const filterForm = document.getElementById("filterForm");
+  if (filterForm) {
+    filterForm.onsubmit = function(e) {
+      e.preventDefault();
+      loadFilteredOrders();
+    };
+  }
+
+  // Load filtered orders
+  function loadFilteredOrders() {
+    const status = document.getElementById('filterStatus').value;
+    const from = document.getElementById('filterFrom').value;
+    const to = document.getElementById('filterTo').value;
+
+    fetch(`get_orders_filter.php?status=${status}&from=${from}&to=${to}`)
+      .then(res => res.json())
+      .then(data => {
+        const orderDiv = document.getElementById('orderList');
+        if (data.length === 0) {
+          orderDiv.innerHTML = "<p>Tidak ada data sesuai filter.</p>";
+        } else {
+          orderDiv.innerHTML = `
+            <table border="1" cellspacing="0" cellpadding="8" style="width:100%; text-align:left;">
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Order ID</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Tanggal</th>
+                  <th>Invoice</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.map(o => `
+                  <tr>
+                    <td>${o.username}</td>
+                    <td>${o.order_id}</td>
+                    <td>$${o.total}</td>
+                    <td>${o.status}</td>
+                    <td>${o.created_at}</td>
+                    <td><a href="cetak_invoice.php?order_id=${o.order_id}" target="_blank">Cetak</a></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          `;
+        }
+      });
+  }
+
+  // Export
+  document.getElementById("filterExport")?.addEventListener("click", function () {
+    const status = document.getElementById('filterStatus').value;
+    const from = document.getElementById('filterFrom').value;
+    const to = document.getElementById('filterTo').value;
+    const url = `export_csv_filter.php?status=${status}&from=${from}&to=${to}`;
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'laporan_terfilter.csv';
+    a.click();
+  });
+
+  // Chart statistik
+  fetch('chart.data.php')
+    .then(res => res.json())
+    .then(data => {
+      const ctx = document.getElementById('orderChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: data.labels,
+          datasets: [{
+            label: 'Jumlah Pesanan',
+            data: data.values,
+            backgroundColor: ['#6c5ce7', '#00b894', '#fdcb6e', '#d63031', '#636e72']
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { precision: 0 }
+            }
+          }
+        }
+      });
+    });
+
+  // Load pesanan awal
+  loadFilteredOrders();
+
+});
+
+function logout() {
+  localStorage.removeItem('activeUser');
+  localStorage.removeItem('activeRole');
+  location.href = '../project/login.html';
+}
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+</body>
+</html>

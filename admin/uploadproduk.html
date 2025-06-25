@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Panel</title>
+  <!-- SWIPER -->
+  <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+</head>
+<body>
+
+  <!-- Proteksi Admin -->
+  <script>
+  const user = localStorage.getItem('activeUser');
+  const role = localStorage.getItem('activeRole');
+
+  if (!user || role !== 'admin') {
+    alert("Akses hanya untuk admin!");
+    window.location.href = '../project/login.html';
+  }
+  </script>
+
+  <!-- HEADER -->
+    <header class="header">
+    <div id="menu-btn" class="fas fa-bars"></div>
+    <a href="#" class="logo">
+  <img src="../image/Bah-Sipit.png" alt="Kopi BahSipit" style="height: 40px; vertical-align: middle;">
+</a>
+   <nav class="navbar">
+      <a href="admin.html">Dashboard</a>
+      <a href="pesanan.html">pesanan</a>
+            <a href="uploadproduk.html">produk</a>
+    </nav>
+    <div class="navbar-icons">
+      <span id="userWelcome"></span>
+      <i class="fas fa-user" onclick="toggleSidebar('profileSidebar')"></i>
+      <i class="fas fa-power-off" onclick="logout()"></i>
+    </div>
+</header>
+
+
+  <section class="book" style="position:relative;">
+    <h1 class="heading">admin <span>dashboard</span></h1>
+    <button class="btn logout" onclick="logout()" style="position:absolute; top:2rem; right:2rem;">Logout</button>
+
+<!-- Form Upload Produk -->
+    <div class="card-box">
+      <h3>Tambah Produk</h3>
+      <form action="upload_produk.php" method="POST" enctype="multipart/form-data">
+        <label>Nama Produk:
+          <input type="text" name="nama" class="box" required>
+        </label><br>
+        <label>Harga:
+          <input type="number" name="harga" class="box" required>
+        </label><br>
+        <label>Deskripsi:
+          <textarea name="deskripsi" rows="3" class="box" required></textarea>
+        </label><br>
+        <label>Gambar:
+          <input type="file" name="gambar" accept="image/*" required>
+        </label><br>
+        <button type="submit" class="btn">Upload</button>
+      </form>
+    </div>
+
+    <!-- Daftar Produk -->
+    <div class="card-box">
+  <h3>Daftar Produk</h3>
+  <div class="table-container">
+    <table class="produk-table">
+      <thead>
+        <tr>
+          <th>Gambar</th>
+          <th>Nama Produk</th>
+          <th>Deskripsi</th>
+          <th>Harga</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="produkList">
+        <!-- Diisi dari JS -->
+      </tbody>
+    </table>
+  </div>
+</div>
+  </section>
+
+  <!-- SCRIPT -->
+  <script>
+    
+
+    // Logout
+    function logout() {
+      localStorage.removeItem('activeUser');
+      localStorage.removeItem('activeRole');
+      window.location.href = 'login.html';
+    }
+
+    // Filter Pesanan
+    document.getElementById("filterForm").onsubmit = function(e) {
+      e.preventDefault();
+      loadFilteredOrders();
+    };
+
+    function loadFilteredOrders() {
+      const status = document.getElementById('filterStatus').value;
+      const from = document.getElementById('filterFrom').value;
+      const to = document.getElementById('filterTo').value;
+
+      fetch(`get_orders_filter.php?status=${status}&from=${from}&to=${to}`)
+        .then(res => res.json())
+        .then(data => {
+          const orderDiv = document.getElementById('orderList');
+          if (data.length === 0) return orderDiv.innerHTML = "<p>Tidak ada data sesuai filter.</p>";
+          orderDiv.innerHTML = data.map(o => `
+            <p><strong>${o.username}</strong> - ${o.order_id}<br>
+            Total: $${o.total} | Status: <em>${o.status}</em><br>
+            <small>${o.created_at}</small><br>
+            <a href="cetak_invoice.php?order_id=${o.order_id}" target="_blank" class="btn">Cetak Invoice</a>
+            </p><hr>
+          `).join('');
+        });
+    }
+
+    // Export CSV Filter
+    function exportFiltered() {
+      const status = document.getElementById('filterStatus').value;
+      const from = document.getElementById('filterFrom').value;
+      const to = document.getElementById('filterTo').value;
+
+      const url = `export_csv_filter.php?status=${status}&from=${from}&to=${to}`;
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'laporan_terfilter.csv';
+      a.click();
+    }
+
+    // Chart Statistik
+    fetch('chart_data.php')
+      .then(res => res.json())
+      .then(data => {
+        const ctx = document.getElementById('orderChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: data.labels,
+            datasets: [{
+              label: 'Jumlah Pesanan',
+              data: data.values,
+              backgroundColor: ['#6c5ce7', '#00b894', '#fdcb6e', '#d63031']
+            }]
+          }
+        });
+      });
+
+      // Load produk dari server
+    function loadProduk() {
+  fetch('get_produk.php')
+    .then(res => res.json())
+    .then(data => {
+      const list = document.getElementById('produkList');
+      if (!list) return;
+
+      if (data.length === 0) {
+        list.innerHTML = '<tr><td colspan="5">Belum ada produk.</td></tr>';
+        return;
+      }
+
+      list.innerHTML = data.map(p => `
+        <tr>
+          <td><img src="../image/upload/${p.gambar}" alt="${p.nama}" style="max-height:60px;"></td>
+          <td>${p.nama}</td>
+          <td>${p.deskripsi}</td>
+          <td>$${p.harga}</td>
+          <td>
+            <form method="POST" action="hapus_produk.php" onsubmit="return confirm('Yakin ingin menghapus produk ini?')">
+              <input type="hidden" name="id" value="${p.id}">
+              <button type="submit" class="btn">Hapus</button>
+            </form>
+          </td>
+        </tr>
+      `).join('');
+    });
+}
+
+    // Load default orders saat pertama buka
+    loadFilteredOrders();
+    // Load produk saat pertama buka halaman
+loadProduk();
+
+  </script>
+
+</body>
+</html>

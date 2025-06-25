@@ -1,0 +1,374 @@
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User - Coffee</title>
+
+  <!-- SWIPER -->
+  <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+</head>
+
+<body>
+  <header class="header">
+    <div id="menu-btn" class="fas fa-bars"></div>
+    <a href="#" class="logo">
+  <img src="../image/Bah-Sipit.png" alt="Kopi BahSipit" style="height: 40px; vertical-align: middle;">
+</a>
+    <nav class="navbar">
+      <a href="#home">home</a>
+      <a href="#about">about</a>
+      <a href="#menu">menu</a>
+      <a href="#book">book</a>
+    </nav>
+    <div class="navbar-icons">
+      <span id="userWelcome"></span>
+      <i class="fas fa-user" onclick="toggleSidebar('profileSidebar')"></i>
+      <i class="fas fa-shopping-cart" onclick="toggleCart()"></i>
+      <i class="fas fa-power-off" onclick="logout()"></i>
+    </div>
+  </header>
+
+  <div class="cart-sidebar" id="cartSidebar">
+    <button class="btn" onclick="scrollToHistory()">Lihat Semua Riwayat</button>
+    <span class="cart-close" onclick="toggleCart()">&times;</span>
+    <h2>Your Cart</h2>
+    <div id="cartContent">
+      <p>Loading cart...</p>
+    </div>
+    <hr>
+<h3>Riwayat Pesanan</h3>
+<div id="cartHistory">
+  <p>Loading history...</p>
+</div>
+    <button class="btn" onclick="checkoutCart()">Checkout</button>
+  </div>
+  </header>
+
+   <!-- SIDEBAR: PROFILE -->
+  <div class="sidebar" id="profileSidebar">
+    <span class="close-btn" onclick="toggleSidebar('profileSidebar')">&times;</span>
+    <h2>Your Profile</h2>
+    <p><strong>Username:</strong> <span id="profilName"></span></p>
+    <p><strong>Role:</strong> <span id="profilRole"></span></p>
+  </div>
+
+  <!-- HOME -->
+  <section class="home" id="home">
+    <div class="row">
+      <div class="content">
+        <h3>fresh coffee in the morning</h3>
+        <a href="#menu" class="btn" onclick="order('our special coffee', 8.99)">buy one now</a>
+      </div>
+      <div class="image">
+        <img src="../image/home-img-1.png" class="main-home-image" alt="">
+      </div>
+    </div>
+    <div class="image-slider">
+      <img src="../image/home-img-1.png" alt="">
+      <img src="../image/home-img-2.png" alt="">
+      <img src="../image/home-img-3.png" alt="">
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <h1 class="heading">about us <span>why choose us</span></h1>
+    <div class="row">
+      <div class="image">
+        <img src="../image/about-img.png" alt="">
+      </div>
+      <div class="content">
+        <h3 class="title">what's make our coffee special!</h3>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel rerum laboriosam reprehenderit ipsa id repellat odio illum, voluptas, necessitatibus assumenda adipisci.</p>
+        <a href="#" class="btn">read more</a>
+        <div class="icons-container">
+          <div class="icons">
+            <img src="../image/about-icon-1.png" alt="">
+            <h3>quality coffee</h3>
+          </div>
+          <div class="icons">
+            <img src="../image/about-icon-2.png" alt="">
+            <h3>our branches</h3>
+          </div>
+          <div class="icons">
+            <img src="../image/about-icon-3.png" alt="">
+            <h3>free delivery</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU -->
+  <section class="home" id="home">
+    <div class="row">
+      <div class="content">
+        <h3>fresh coffee in the morning</h3>
+        <a href="#menu" class="btn">buy one now</a>
+      </div>
+      <div class="image">
+        <img src="../image/home-img-1.png" class="main-home-image" alt="">
+      </div>
+    </div>
+    <div class="image-slider">
+      <img src="../image/home-img-1.png" alt="">
+      <img src="../image/home-img-2.png" alt="">
+      <img src="../image/home-img-3.png" alt="">
+    </div>
+  </section>
+
+  <section class="menu" id="menu">
+    <h1 class="heading">our menu <span>popular menu</span></h1>
+    <div class="box-container">
+      <div class="box">
+        <img src="../image/robusta.png" alt="">
+        <div class="content">
+          <h3>Espresso</h3>
+          <p>Rich and strong coffee for your day.</p>
+          <span>$5.00</span>
+          <button class="btn" onclick="addToCart('Espresso', 5.00)">Add to Cart</button>
+        </div>
+      </div>
+      <div class="box">
+        <img src="../image/eskopi.png" alt="">
+        <div class="content">
+          <h3>Latte</h3>
+          <p>Creamy latte with perfect foam.</p>
+          <span>$6.50</span>
+          <button class="btn" onclick="addToCart('Latte', 6.50)">Add to Cart</button>
+        </div>
+      </div>
+      <div class="box">
+        <img src="../image/Tubruk.png" alt="">
+        <div class="content">
+          <h3>Latte</h3>
+          <p>Creamy latte with perfect foam.</p>
+          <span>$6.50</span>
+          <button class="btn" onclick="addToCart('Latte', 6.50)">Add to Cart</button>
+        </div>
+      </div>
+      <div class="box">
+        <img src="../image/menu-2.png" alt="">
+        <div class="content">
+          <h3>Latte</h3>
+          <p>Creamy latte with perfect foam.</p>
+          <span>$6.50</span>
+          <button class="btn" onclick="addToCart('Latte', 6.50)">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- REVIEW 
+<section class="review" id="review">
+  <h1 class="heading">tulis <span>ulasanmu</span></h1>
+
+  <form id="ulasanForm" class="card-box" style="max-width:600px; margin:auto;">
+
+    <input type="text" id="namaUser" name="nama" class="box" readonly />
+    <textarea name="komentar" placeholder="Tulis komentar anda..." required class="box" rows="4"></textarea>
+
+    Section Rating: Hanya satu container
+    <div class="rating-container">
+  <input type="hidden" name="rating" id="ratingValue" value="5" />
+  <div class="stars">
+    <button type="button" data-star="1">★</button>
+    <button type="button" data-star="2">★</button>
+    <button type="button" data-star="3">★</button>
+    <button type="button" data-star="4">★</button>
+    <button type="button" data-star="5">★</button>
+  </div>
+</div>
+
+    <button type="submit" class="btn">Kirim Ulasan</button>
+  </form>
+
+  <h1 class="heading">apa kata <span>pelanggan</span></h1>
+  <div class="swiper review-slider">
+    <div class="swiper-wrapper" id="ulasanSlider">
+      Card ulasan akan disisipkan dari JS
+    </div>
+    <div class="swiper-pagination"></div>
+  </div>
+</section>-->
+
+
+  <!-- BOOKING -->
+  <section class="book" id="book">
+    <h1 class="heading">booking <span>reserve a table</span></h1>
+    <form>
+      <input type="text" placeholder="Name" class="box">
+      <input type="email" placeholder="Email" class="box">
+      <input type="number" placeholder="Number" class="box">
+      <textarea placeholder="Message" class="box" cols="30" rows="10"></textarea>
+      <input type="submit" value="send message" class="btn">
+    </form>
+  </section>
+
+  <!-- FOOTER -->
+  <section class="footer">
+    <div class="box-container">
+      <div class="box">
+        <h3>our branches</h3>
+        <a href="#">india</a><a href="#">USA</a><a href="#">france</a><a href="#">africa</a><a href="#">japan</a>
+      </div>
+      <div class="box">
+        <h3>quick links</h3>
+        <a href="#home">home</a><a href="#about">about</a><a href="#menu">menu</a><a href="#review">review</a><a href="#book">book</a>
+      </div>
+      <div class="box">
+        <h3>contact info</h3>
+        <a href="#">+123-456-7890</a><a href="#">+111-222-3333</a><a href="#">coffee@gmail.com</a><a href="#">Perú, Lima</a>
+      </div>
+      <div class="box">
+        <h3>social media</h3>
+        <a href="#">facebook</a><a href="#">twitter</a><a href="#">instagram</a><a href="#">linkedin</a>
+      </div>
+    </div>
+    <div class="credit">created by <span>Ali & Ardiansyah</span> | all rights reserved</div>
+  </section>
+
+  <script>
+const user = localStorage.getItem('activeUser') || 'User';
+const role = localStorage.getItem('activeRole') || '-';
+
+async function checkoutCart() {
+  const user = localStorage.getItem("activeUser");
+  if (!user) {
+    alert("Kamu harus login dulu untuk checkout.");
+    window.location.href = "login.html";
+    return;
+  }
+
+  const cart = JSON.parse(localStorage.getItem(`cart_${user}`)) || [];
+  if (cart.length === 0) return alert("Keranjang kosong!");
+
+  // lanjutkan proses checkout...
+}
+
+
+document.getElementById('userWelcome').innerText = 'Welcome, ' + user;
+document.getElementById('profilName').innerText = user;
+document.getElementById('profilRole').innerText = role;
+
+if (!user || !role) {
+  alert("Silakan login terlebih dahulu.");
+  window.location.href = 'login.html';
+}
+
+function toggleSidebar(id) {
+  document.getElementById(id).classList.toggle('active');
+}
+function toggleCart() {
+  document.getElementById('cartSidebar').classList.toggle('active');
+}
+function logout() {
+  localStorage.removeItem('activeUser');
+  localStorage.removeItem('activeRole');
+  location.href = 'login.html';
+}
+
+function addToCart(item, price) {
+  const user = localStorage.getItem("activeUser");
+  if (!user) {
+    alert("Kamu harus login dulu untuk memesan!");
+    window.location.href = "login.html";
+    return;
+  }
+
+  let cart = JSON.parse(localStorage.getItem(`cart_${user}`)) || [];
+  cart.push({ item, price, time: new Date().toLocaleString() });
+  localStorage.setItem(`cart_${user}`, JSON.stringify(cart));
+  alert(`${item} ditambahkan ke keranjang.`);
+  loadCart();
+}
+
+function loadCart() {
+  const cart = JSON.parse(localStorage.getItem(`cart_${user}`)) || [];
+  const container = document.getElementById('cartContent');
+  container.innerHTML = '';
+  if (cart.length === 0) {
+    container.innerHTML = '<p>Keranjang kosong.</p>';
+    return;
+  }
+  let total = 0;
+  cart.forEach((o, i) => {
+    const p = document.createElement('p');
+    p.textContent = `${i + 1}. ${o.item} - $${o.price.toFixed(2)} - ${o.time}`;
+    container.appendChild(p);
+    total += o.price;
+  });
+  const totalEl = document.createElement('p');
+  totalEl.innerHTML = `<strong>Total: $${total.toFixed(2)}</strong>`;
+  container.appendChild(totalEl);
+}
+function scrollToHistory() {
+  toggleCart();
+  document.getElementById("riwayat").scrollIntoView({ behavior: "smooth" });
+}
+
+async function checkoutCart() {
+  const user = localStorage.getItem("activeUser");
+  if (!user) {
+    alert("Kamu harus login dulu untuk checkout.");
+    window.location.href = "login.html";
+    return;
+  }
+
+  const cart = JSON.parse(localStorage.getItem(`cart_${user}`)) || [];
+  if (cart.length === 0) return alert("Keranjang kosong!");
+
+  // lanjutkan proses checkout...
+}
+
+
+async function checkoutCart() {
+  const cart = JSON.parse(localStorage.getItem(`cart_${user}`)) || [];
+  if (cart.length === 0) return alert("Keranjang kosong!");
+
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
+  const res = await fetch('checkout.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: user, total: total, items: cart })
+  });
+
+  const data = await res.json();
+  if (data.snapToken) {
+    localStorage.setItem('lastOrderId', data.order_id);
+    window.snap.pay(data.snapToken, {
+      onSuccess: function () {
+        alert('Pembayaran berhasil!');
+        localStorage.removeItem(`cart_${user}`);
+        window.location.href = 'thanks.html';
+      },
+      onPending: function () {
+        alert('Menunggu pembayaran diselesaikan.');
+      },
+      onError: function () {
+        alert('Terjadi kesalahan saat pembayaran.');
+      }
+    });
+  } else {
+    alert("Gagal membuat Snap Token: " + (data.error || 'Unknown error'));
+  }
+}
+
+  loadCart();
+  loadCartHistory();
+</script>
+
+
+  <script src="https://unpkg.com/swiper@7/swiper-bundle.min.js"></script>
+  <script src="js/script.js"></script>
+   <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="YOUR_CLIENT_KEY"></script>
+</body>
+
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Panel</title>
+  <!-- SWIPER -->
+  <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<style>
+select.box, input[type="date"].box {
+  width: 100%;
+  padding: 0.8rem 1.2rem;
+  font-size: 1.5rem;
+  border: var(--border);
+  border-radius: var(--border-radius);
+  background: none;
+  color: var(--main-color);
+}
+</style>
+<body>
+
+  <!-- Proteksi Admin -->
+  <script>
+  const user = localStorage.getItem('activeUser');
+  const role = localStorage.getItem('activeRole');
+
+  if (!user || role !== 'admin') {
+    alert("Akses hanya untuk admin!");
+    window.location.href = '../project/login.html';
+  }
+  </script>
+
+  <!-- HEADER -->
+    <header class="header">
+    <div id="menu-btn" class="fas fa-bars"></div>
+    <a href="#" class="logo">
+  <img src="../image/Bah-Sipit.png" alt="Kopi BahSipit" style="height: 40px; vertical-align: middle;">
+</a>
+   <nav class="navbar">
+      <a href="admin.html">Dashboard</a>
+      <a href="pesanan.html">pesanan</a>
+            <a href="uploadproduk.html">produk</a>
+
+    </nav>
+    <div class="navbar-icons">
+      <span id="userWelcome"></span>
+      <i class="fas fa-user" onclick="toggleSidebar('profileSidebar')"></i>
+      <i class="fas fa-power-off" onclick="logout()"></i>
+    </div>
+</header>
+
+
+<section class="book" style="position:relative;">
+    <h1 class="heading">admin <span>pesanan</span></h1>
+    <button class="btn logout" onclick="logout()" style="position:absolute; top:2rem; right:2rem;">Logout</button>
+
+    <!-- Filter -->
+    <form id="filterForm" class="card-box" style="margin-top: 2rem; max-width: 800px; margin-inline:auto;">
+      <h3 style="margin-bottom: 1rem;">Filter Pesanan</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: center;">
+        <label>Status:
+          <select id="filterStatus" class="box">
+            <option value="">Semua</option>
+            <option value="paid">Paid</option>
+            <option value="pending">Pending</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </label>
+
+        <label>Dari Tanggal:
+          <input type="date" id="filterFrom" class="box" />
+        </label>
+
+        <label>Sampai Tanggal:
+          <input type="date" id="filterTo" class="box" />
+        </label>
+
+        <div style="display: flex; gap: 1rem;">
+          <button type="submit" class="btn">Terapkan Filter</button>
+          <button type="button" class="btn" onclick="exportFiltered()">Export Filter</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Tabel Pesanan -->
+    <div class="card-box" style="margin-top:2rem;">
+      <h3>Daftar Pesanan</h3>
+      <div id="orderList">
+        <table style="width:100%; border-collapse:collapse; margin-top:1rem;">
+          <thead>
+            <tr style="text-align:left;">
+              <th>Username</th>
+              <th>Order ID</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Tanggal</th>
+              <th>Invoice</th>
+            </tr>
+          </thead>
+          <tbody id="orderTableBody">
+            <tr><td colspan="6">Loading data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function logout() {
+      localStorage.removeItem('activeUser');
+      localStorage.removeItem('activeRole');
+      window.location.href = 'login.html';
+    }
+
+    document.getElementById("filterForm").onsubmit = function(e) {
+      e.preventDefault();
+      loadFilteredOrders();
+    };
+
+    function exportFiltered() {
+      const status = document.getElementById('filterStatus').value;
+      const from = document.getElementById('filterFrom').value;
+      const to = document.getElementById('filterTo').value;
+      const url = `export_csv_filter.php?status=${status}&from=${from}&to=${to}`;
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'laporan_terfilter.csv';
+      a.click();
+    }
+
+    function loadFilteredOrders() {
+      const status = document.getElementById('filterStatus').value;
+      const from = document.getElementById('filterFrom').value;
+      const to = document.getElementById('filterTo').value;
+
+      fetch(`get_orders_filter.php?status=${status}&from=${from}&to=${to}`)
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.getElementById("orderTableBody");
+          if (!data.length) {
+            tbody.innerHTML = '<tr><td colspan="6">Tidak ada data sesuai filter.</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = data.map(o => `
+            <tr>
+              <td>${o.username}</td>
+              <td>${o.order_id}</td>
+              <td>$${o.total}</td>
+              <td>${o.status}</td>
+              <td>${o.created_at}</td>
+              <td><a href="cetak_invoice.php?order_id=${o.order_id}" class="btn" target="_blank">Cetak</a></td>
+            </tr>
+          `).join('');
+        });
+    }
+
+    loadFilteredOrders();
+  </script>
+
+
+</body>
+</html>

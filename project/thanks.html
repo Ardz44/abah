@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Terima Kasih</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <section class="book">
+    <h1 class="heading">pembayaran <span>berhasil</span></h1>
+    <div class="card-box" style="text-align:center;">
+      <h2>Terima kasih telah berbelanja di <br><span style="color:#443;">Kedai Kopi BahSipit ☕</span></h2>
+      <p>Pesanan Anda sedang diproses.</p>
+      <a href="index.html" class="btn">Kembali ke Beranda</a>
+      <a href="admin.html" class="btn">Ke Dashboard Admin</a>
+    </div>
+  </section>
+  <script>
+  const lastId = localStorage.getItem('lastOrderId');
+  if (lastId) {
+    const link = document.createElement('a');
+    link.href = `cetak_invoice.php?order_id=${lastId}`;
+    link.className = 'btn';
+    link.textContent = 'Lihat Invoice';
+    document.querySelector('.card-box').appendChild(link);
+  }
+</script>
+
+</body>
+</html>
